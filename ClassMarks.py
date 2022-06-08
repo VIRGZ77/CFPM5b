@@ -1,4 +1,5 @@
-from os.path import exists as results_exist
+import os.path
+from os import path
 import statistics
 
 forename = 0
@@ -70,23 +71,30 @@ def subject_report(subject_name):
     print("median:", statistics.median(marks_list)) 
     print("Pass rate:", pass_count, '/', len(records))
 
-# Promt User to enter a class name.
+# Prompt User to enter a class name.
 classname = input("Please enter the Class name: ")
 filename = classname + '.txt'
-if results_exist(filename):
+file_exists = False
+if path.exists(filename):
+    file_exists = True
     # If it exists, read all entered records into program
     with open(filename) as f:
+        print("Retrieving records...")
         all_records = f.readlines()
 f = open(filename, 'a+') 
 
-# Prompt user to select operation mode
-user_mode = input("Please select mode. ENTRY or REPORT? ")
-if user_mode.upper() == 'ENTRY':   
+# Prompt user to select operation mode if file exists else start entry mode
+if file_exists:
+    user_mode = input("Please select mode. ENTRY or REPORT? ")
+    if user_mode.upper() == 'ENTRY':   
+        entry_mode = True
+        report_mode = False 
+    if user_mode.upper() == 'REPORT':
+        report_mode = True
+        entry_mode = False
+else:
     entry_mode = True
-    report_mode = False 
-if user_mode.upper() == 'REPORT':
-    report_mode = True
-    entry_mode = False
+    report_mode = False
 
 while entry_mode:
     print("Enter students <FORENAME> <SURNAME> <SUBJECT> <MARK> - seperated by <SPACES>")

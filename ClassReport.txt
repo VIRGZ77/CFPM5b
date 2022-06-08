@@ -1,0 +1,10 @@
+Exercise 4 - ClassReport
+A teacher has a set of percentage marks for a class.
+
+1) They want a program where they input student names and marks from the keyboard, and write to a file. The file should be named for the class (eg. '3b.txt')
+
+2) Then they want to be able to read the file and work out some statistics. Average mark, top and bottom marks, and how many students passed if the mark is 45%
+
+3) Be able to print a report for each student by name displaying the marks and grades. Grade is A if mark is over 70, B for 60 to 69, C for 45 to 59 and F for below 45.
+
+4) You could do this as two functions, one to save the data in the first.

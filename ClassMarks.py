@@ -1,6 +1,8 @@
 import os.path
 from os import path
 import statistics
+import json
+import pickle
 
 forename = 0
 surname = 1
@@ -39,39 +41,79 @@ def student_report(student_name):
     print("Results for:")
     print("\t", student_name[forename], student_name[surname], "\t", end="")
     r = 0
+    report = {}
+    report["Forename"] = student_name[forename]
+    report["Surname"] = student_name[surname]
     while r < len(records):
         if (records[r][forename] == student_name[forename]) and (records[r][surname]) == student_name[surname]:
             print('[', records[r][subject],':',records[r][mark], records[r][grade], '] ', end="")
+            report[records[r][subject]] = records[r][mark] + ' (' + records[r][grade] + ')'
         r+=1
+    return report
 
 def subject_report(subject_name):
     subject_name = subject_name.upper()
     print("\n") 
     marks_list = []
     pass_count = 0
+    fail_count = 0
     i = 0             
     if (subject_name == 'MATHS') or (subject_name == 'ENGLISH') or (subject_name == 'SCIENCE') or (subject_name == 'ART'):
-        print(subject_name, "Exam Results Statistics:")
+        report_title = subject_name
         while i < len(records):
             if (records[i][subject].upper() == subject_name):
                 marks_list.append(int(records[i][mark]))
-                if not(records[i][grade] == '(F)'):
+                if not(records[i][grade] == 'F'):
                     pass_count+=1
+                else:
+                    fail_count+=1       
             i+=1     
     else: 
-        print("ALL Exam Results Statistics:")
+        report_title = 'ALL'
         while i < len(records):
             marks_list.append(int(records[i][mark]))
-            if not(records[i][grade] == '(F)'):
+            if not(records[i][grade] == 'F'):
                 pass_count+=1
-            i+=1                       
+            else:
+                fail_count+=1
+            i+=1   
+    print(report_title, "Exam Results Statistics:")
     print("min:", min(marks_list))
     print("max:", max(marks_list))
     print("mean:", statistics.mean(marks_list))
     print("median:", statistics.median(marks_list)) 
-    print("Pass rate:", pass_count, '/', len(records))
-
+    print("Passed:", pass_count)
+    print("Failed:", fail_count)
     
+    report = {}
+    report["Subject"] = report_title
+    report["Min"] = min(marks_list)
+    report["Max"] = max(marks_list)
+    report["Mean"] = statistics.mean(marks_list)
+    report["Median"] = statistics.median(marks_list)
+    report["Passed"] = pass_count
+    report["Failed"] = fail_count
+    return report    
+
+def json_export(report):
+    # Write json file
+    with open("report.json", "w") as f:
+        json.dump(report, f)  
+    # Read json file
+    f = open("report.json")
+    print("\n")
+    print(json.load(f))
+    print("'report.json' file created.")
+
+def pickle_export(report):
+    # Write pickle file
+    with open("report.pickle", "wb") as f:
+        pickle.dump(report, f) 
+    # Read pickle file
+    f = open("report.pickle", "rb")
+    print("\n")
+    print(pickle.load(f))
+    print("'report.pickle' file created.")
     
 # Prompt User to enter a class name.
 classname = input("Please enter the Class name: ")
@@ -102,13 +144,12 @@ else:
 
 while entry_mode:
     print("Enter students <FORENAME> <SURNAME> <SUBJECT> <MARK> - seperated by <SPACES>")
-    user_input = input("Enter Result: ")
-    # CHECK input string for 3 spaces and integers and . before processing.  Maybe a regex!
-    
+    user_input = input("Enter Result: ")  
     if user_input[0:4].upper() == 'EXIT':
         f.close()
         entry_mode = False
     else:
+        # CHECK input string for 3 spaces and integers and . before processing.  Maybe a regex!
         f.write(format_record_write(user_input))
 
 while report_mode: 
@@ -120,10 +161,21 @@ while report_mode:
     
     if report_type.upper() == 'STUDENT':
         user_input = input("Enter Students name: ")
-        student_report(user_input)
+        report = student_report(user_input)
         
     if report_type.upper() == 'SUBJECT':
         user_input = input("Please select a subject. ALL MATHS ENGLISH SCIENCE ART? ")
-        subject_report(user_input)
+        report = subject_report(user_input)
+    
+    user_input = input("\nPress 'J' to export data to data.json or 'P' to export to data.pickle or 'Q' to quit: ")
+    while not((user_input.upper() == 'J') or (user_input.upper() == 'P') or (user_input.upper() == 'Q')):
+        user_input = input("\nPress 'J' to export data to data.json or 'P' to export to data.pickle or 'Q' to quit: ")
         
+    if user_input.upper() == 'J':
+        json_export(report)
+
+    elif user_input.upper() == 'P':
+        pickle_export(report)
+    else:
+        print("Good Bye!")
     report_mode = False

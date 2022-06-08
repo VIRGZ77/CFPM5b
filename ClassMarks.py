@@ -10,6 +10,25 @@ subject = 2
 mark = 3
 grade = 4
 
+def split_check(user_input):
+    """Checks user_input for 4 seperate parts by ensuring only 3 spaces are present"""
+    space = 0
+    posn = 0
+    for c in user_input:
+        posn+=1
+        if c.isspace():
+            space+=1
+            position = posn
+    if space == 3:
+        for n in user_input[position:]:
+            if not(n.isdigit()):
+                print("ERROR: MARK portion contains non numeric characters") 
+                return False
+        return True
+    else:
+        print("ERROR: Entry does not contain 4 parts e.g., Joe Bloggs Maths 99") 
+        return False  
+
 def format_record_write(record):
     record = record.replace(",","") 
     record = record.split()
@@ -135,23 +154,26 @@ if file_exists:
     if user_mode.upper() == 'ENTRY':   
         entry_mode = True
         report_mode = False 
+        print("Enter students <FORENAME> <SURNAME> <SUBJECT> <MARK> - seperated by <SPACES>")
     if user_mode.upper() == 'REPORT':
         report_mode = True
         entry_mode = False
 else:
     entry_mode = True
     report_mode = False
+    print("Enter students <FORENAME> <SURNAME> <SUBJECT> <MARK> - seperated by <SPACES>")
 
 while entry_mode:
-    print("Enter students <FORENAME> <SURNAME> <SUBJECT> <MARK> - seperated by <SPACES>")
     user_input = input("Enter Result: ")  
     if user_input[0:4].upper() == 'EXIT':
         f.close()
         entry_mode = False
-    else:
-        # CHECK input string for 3 spaces and integers and . before processing.  Maybe a regex!
+    elif split_check(user_input):
         f.write(format_record_write(user_input))
-
+    else:
+        print("Invalid Entry!")
+    
+    
 while report_mode: 
     records = retrieve_records(filename)
     

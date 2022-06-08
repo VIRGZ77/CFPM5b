@@ -71,6 +71,8 @@ def subject_report(subject_name):
     print("median:", statistics.median(marks_list)) 
     print("Pass rate:", pass_count, '/', len(records))
 
+    
+    
 # Prompt User to enter a class name.
 classname = input("Please enter the Class name: ")
 filename = classname + '.txt'
@@ -86,6 +88,8 @@ f = open(filename, 'a+')
 # Prompt user to select operation mode if file exists else start entry mode
 if file_exists:
     user_mode = input("Please select mode. ENTRY or REPORT? ")
+    while not((user_mode.upper() == 'ENTRY') or (user_mode.upper() == 'REPORT')):
+        user_mode = input("Please select mode. ENTRY or REPORT? ")
     if user_mode.upper() == 'ENTRY':   
         entry_mode = True
         report_mode = False 
@@ -99,6 +103,7 @@ else:
 while entry_mode:
     print("Enter students <FORENAME> <SURNAME> <SUBJECT> <MARK> - seperated by <SPACES>")
     user_input = input("Enter Result: ")
+    # CHECK input string for 3 spaces and integers and . before processing.  Maybe a regex!
     
     if user_input[0:4].upper() == 'EXIT':
         f.close()
@@ -110,6 +115,8 @@ while report_mode:
     records = retrieve_records(filename)
     
     report_type = input("Please select report. STUDENT or SUBJECT? ")
+    while not((report_type.upper() == 'STUDENT') or (report_type.upper() == 'SUBJECT')):
+        report_type = input("Please select report. STUDENT or SUBJECT? ")
     
     if report_type.upper() == 'STUDENT':
         user_input = input("Enter Students name: ")

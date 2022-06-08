@@ -12,9 +12,10 @@ classname = input("Please enter the Class name: ")
 filename = classname + '.txt'
 if results_exist(filename):
     # If it exists, read all entered records into program
-    with open(classname + '.txt') as f:
+    print("Retrieving existing file data")
+    with open(filename) as f:
         all_records = f.readlines()
-f = open(classname + '.txt', 'a+') 
+f = open(filename, 'a+') 
 
 # Prompt user to select operation mode
 user_mode = input("Please select mode. ENTRY or REPORT? ")
@@ -33,7 +34,8 @@ while entry_mode:
         f.close()
         entry_mode = False
     else:
-        new_record = user_input.split()
+        new_record = user_input.replace(",","")
+        new_record = new_record.split()
         write_record = new_record[forename] + ', ' + new_record[surname] + ', ' + new_record[subject] + ', ' + new_record[mark]
         f.write(write_record + '\n')        
 

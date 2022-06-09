@@ -10,8 +10,9 @@ subject = 2
 mark = 3
 grade = 4
 
-def split_check(user_input):
-    """Checks user_input for 4 seperate parts by ensuring only 3 spaces are present"""
+def entry_check(user_input):
+    """ Ensures that record entry string has 4 distinct parts seperated by SPACES
+        and that the 4th part is only number characters"""
     space = 0
     posn = 0
     for c in user_input:
@@ -30,17 +31,28 @@ def split_check(user_input):
         return False  
 
 def format_record_write(record):
+    """ Formats the entererd record string to remove any COMMAS and then splits it into a word list"""
     record = record.replace(",","") 
     record = record.split()
     return record[forename] + ', ' + record[surname] + ', ' + record[subject] + ', ' + record[mark] + '\n'
 
 def format_record_read(record):
+    """ Formats the read record string to remove trailing NEW LINE (\n) and the splits using COMMA SPACE (, )
+        as a separator.  Then a Alphanumeric GRADE is appended depending upon the MARK"""
     record = record.replace("\n","")   
     record = record.split(', ')
     record.append(get_grade(record[mark]))   
     return record
 
+def get_grade(mark):
+    """ Determine GRADE upon specificied MARK"""
+    if (int(mark) >= 70): return 'A'
+    elif (int(mark) >= 60) and (int(mark) < 70): return 'B'
+    elif (int(mark) >= 45) and (int(mark) < 60): return 'C'    
+    elif (int(mark) < 45): return 'F'
+
 def retrieve_records(filename):
+    """ Read all records from an existing file"""
     with open(filename) as f:
         all_records = f.readlines()
         records = []
@@ -49,13 +61,9 @@ def retrieve_records(filename):
             records.append(format_record_read(record))
     return records
 
-def get_grade(mark):
-    if (int(mark) >= 70): return 'A'
-    elif (int(mark) >= 60) and (int(mark) < 70): return 'B'
-    elif (int(mark) >= 45) and (int(mark) < 60): return 'C'    
-    elif (int(mark) < 45): return 'F'
-
 def student_report(student_name):
+    """ Return either a report for the user specified FORENAME SURNAME string provided, or a report for 
+    ALL students"""
     student_name = student_name.split()        
     print("Results for:")
     print("\t", student_name[forename], student_name[surname], "\t", end="")
@@ -71,6 +79,8 @@ def student_report(student_name):
     return report
 
 def subject_report(subject_name):
+    """ Returns either a report for the user specified SUBJECT should it exist in the records, or a report for 
+        ALL records"""
     subject_name = subject_name.upper()
     print("\n") 
     marks_list = []
@@ -115,6 +125,7 @@ def subject_report(subject_name):
     return report    
 
 def json_export(report):
+    """ Export JSON formatted data for passed variable. Reads back to provide user confirmation"""
     # Write json file
     with open("report.json", "w") as f:
         json.dump(report, f)  
@@ -125,6 +136,7 @@ def json_export(report):
     print("'report.json' file created.")
 
 def pickle_export(report):
+    """ Export Pickle formatted data for passed variable.  Reads back to provided user confirmation"""
     # Write pickle file
     with open("report.pickle", "wb") as f:
         pickle.dump(report, f) 
@@ -168,7 +180,7 @@ while entry_mode:
     if user_input[0:4].upper() == 'EXIT':
         f.close()
         entry_mode = False
-    elif split_check(user_input):
+    elif entry_check(user_input):
         f.write(format_record_write(user_input))
     else:
         print("Invalid Entry!")

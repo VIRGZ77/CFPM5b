@@ -61,22 +61,44 @@ def retrieve_records(filename):
             records.append(format_record_read(record))
     return records
 
+def student_list(records):
+    """ Creates a SET of student fullnames """
+    n = 0
+    fullname_list = []
+    while n < len(records):
+        fullname = records[n][forename]+" "+records[n][surname]
+        fullname_list.append(fullname)  
+        n+=1
+    students =set(fullname_list)
+    return students
+
 def student_report(student_name):
     """ Return either a report for the user specified FORENAME SURNAME string provided, or a report for 
     ALL students"""
-    student_name = student_name.split()        
-    print("Results for:")
-    print("\t", student_name[forename], student_name[surname], "\t", end="")
-    r = 0
-    report = {}
-    report["Forename"] = student_name[forename]
-    report["Surname"] = student_name[surname]
-    while r < len(records):
-        if (records[r][forename] == student_name[forename]) and (records[r][surname]) == student_name[surname]:
-            print('[', records[r][subject],':',records[r][mark], records[r][grade], '] ', end="")
-            report[records[r][subject]] = records[r][mark] + ' (' + records[r][grade] + ')'
-        r+=1
-    return report
+    if student_name:
+        student_name = student_name.split()        
+        print("\n", student_name[forename], student_name[surname], "\t", end="")
+        r = 0
+        report = {}
+        report["Forename"] = student_name[forename]
+        report["Surname"] = student_name[surname]
+        while r < len(records):
+            if (records[r][forename] == student_name[forename]) and (records[r][surname]) == student_name[surname]:
+                print('[', records[r][subject],':',records[r][mark], records[r][grade], '] ', end="")
+                report[records[r][subject]] = records[r][mark] + ' (' + records[r][grade] + ')'
+            r+=1
+        return report
+    
+def students_report(records):
+    report = ""
+    students = student_list(records)
+    for individual in students:
+        report = report + str(student_report(individual))
+        #student_report("Alan Virgo")
+        #student_report("Isaac Clarke")
+    
+    return report    
+
 
 def subject_report(subject_name):
     """ Returns either a report for the user specified SUBJECT should it exist in the records, or a report for 
@@ -192,10 +214,14 @@ while report_mode:
     report_type = input("Please select report. STUDENT or SUBJECT? ")
     while not((report_type.upper() == 'STUDENT') or (report_type.upper() == 'SUBJECT')):
         report_type = input("Please select report. STUDENT or SUBJECT? ")
+        user_mode = user_mode.upper()
     
     if report_type.upper() == 'STUDENT':
         user_input = input("Enter Students name: ")
-        report = student_report(user_input)
+        if user_input:
+            report = student_report(user_input)
+        else:
+            report = students_report(records)
         
     if report_type.upper() == 'SUBJECT':
         user_input = input("Please select a subject. ALL MATHS ENGLISH SCIENCE ART? ")
